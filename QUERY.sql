@@ -23,8 +23,8 @@ create table Matches (
         check (match_status in ('Available', 'Selling Fast', 'Sold Out', 'Postponed'))
 );
 
-drop table Bookings
-create table bookings (
+
+create table Bookings (
     booking_id int primary key,
     user_id int not null,
     match_id int not null,
@@ -59,4 +59,71 @@ INSERT INTO Bookings (booking_id, user_id, match_id, seat_number, payment_status
 (503, 2, 101, 'A-13', 'Confirmed', 150.00),
 (504, 2, 101, NULL, NULL, 150.00),
 (505, 3, 102, 'C-20', 'Pending', 120.00);
+
+
+--- solve query 1
+select *
+from Matches
+where tournament_category = 'Champions League'
+  and match_status = 'Available';
+
+
+
+--- solve query 2
+select user_id, full_name, email
+from Users
+where full_name ilike 'Tanvir%'
+   or full_name ilike '%Haque%';
+
+---solve query 3
+select
+    booking_id,
+    user_id,
+    match_id,
+    coalesce(payment_status, 'Action Required') as systematic_status
+from Bookings
+where payment_status is null;
+
+--solve query 4
+select
+    b.booking_id,
+    u.full_name,
+    m.fixture,
+    b.total_cost
+from Bookings b
+inner join Users u
+    on b.user_id = u.user_id
+inner join Matches m
+    on b.match_id = m.match_id;
+
+---solve query 5
+
+select
+    u.user_id,
+    u.full_name,
+    b.booking_id
+from Users u
+left join Bookings b
+    on u.user_id = b.user_id;
+
+--solve query 6
+select
+    booking_id,
+    match_id,
+    total_cost
+from Bookings
+where total_cost > (
+    select avg(total_cost)
+    from Bookings
+);
+
+--solve query 7
+select
+    match_id,
+    fixture,
+    base_ticket_price
+from Matches
+order by base_ticket_price desc
+offset 1
+limit 2;
 
